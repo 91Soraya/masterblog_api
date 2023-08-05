@@ -31,11 +31,8 @@ def create_new_post():
 def get_posts():
     """GET or POST blog posts"""
     if request.method == "GET":
-        try:
-            sorting_method = request.args.get("sort")
-            sorting_direction = request.args.get("direction")
-        except Exception:
-            return jsonify(POSTS)
+        sorting_method = request.args.get("sort")
+        sorting_direction = request.args.get("direction")
 
         if sorting_method and sorting_direction:
             if sorting_method == "title" or sorting_method == "content":
@@ -44,9 +41,9 @@ def get_posts():
                 if sorting_direction == "desc":
                     return jsonify(sorted(POSTS, key=lambda x: x[sorting_method], reverse=True))
 
-        if len(sorting_method) > 1:
+        if sorting_method != "title":
             return "Invalid sorting method", 400
-        if len(sorting_direction) > 1:
+        if sorting_direction != "content":
             return "Invalid sorting direction", 400
 
     if request.method == "POST":
@@ -67,7 +64,7 @@ def get_posts():
     return jsonify(POSTS)
 
 
-@app.route("/api/posts/<id>", methods=["DELETE"])
+@app.route("/api/posts/<blog_id>", methods=["DELETE"])
 def delete_post(blog_id):
     """Delete blog post"""
     for post in POSTS:
@@ -79,7 +76,7 @@ def delete_post(blog_id):
         return "Post not found", 404
 
 
-@app.route("/api/posts/<id>", methods=["PUT"])
+@app.route("/api/posts/<blog_id>", methods=["PUT"])
 def update_post(blog_id):
     """Update a blog´s title or content"""
     data = request.get_json()
